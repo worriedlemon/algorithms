@@ -1,5 +1,6 @@
 ### Linux ###
 *~
+git.token
 
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
@@ -12,4 +13,3 @@
 
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
-

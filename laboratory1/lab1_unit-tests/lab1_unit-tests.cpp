@@ -59,6 +59,14 @@ void RemoveException()
 	return;
 }
 
+void PushListFrontException()
+{
+	List list1, list2;
+	list1.push_back(TESTVALUE_1);
+	list2.push_front(list1);
+	return;
+}
+
 bool AreEqualArrays(unsigned *array1, unsigned *array2, size_t size)
 {
 	for (size_t i = 0; i < size; i++)
@@ -84,7 +92,7 @@ namespace lab1unittests
 		}
 
 		//push_front() test
-		TEST_METHOD(PushFront)
+		TEST_METHOD(PushElementFront)
 		{
 			List list;
 			list.push_front(TESTVALUE_1);
@@ -249,6 +257,24 @@ namespace lab1unittests
 		TEST_METHOD(Remove_Fail)
 		{
 			Assert::ExpectException<logic_error>(RemoveException);
+		}
+
+		TEST_METHOD(PushListFront_Pass)
+		{
+			List list1, list2;
+			list1.push_back(TESTVALUE_1);
+			list1.push_back(TESTVALUE_2);
+			list2.push_front(TESTVALUE_1);
+			list2.push_front(TESTVALUE_2);
+			list1.push_front(list2);
+			unsigned expected[4] = { list1.at(0), list1.at(1), list1.at(2), list1.at(3) },
+				actual[4] = { TESTVALUE_2, TESTVALUE_1, TESTVALUE_1, TESTVALUE_2 };
+			Assert::IsTrue(AreEqualArrays(expected, actual, 4));
+		}
+
+		TEST_METHOD(PushListFront_Fail)
+		{
+			Assert::ExpectException<logic_error>(PushListFrontException);
 		}
 	};
 }

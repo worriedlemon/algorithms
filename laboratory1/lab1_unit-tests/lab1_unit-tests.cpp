@@ -59,11 +59,19 @@ void RemoveException()
 	return;
 }
 
-void PushListFrontException()
+void PushListFrontLogicException()
 {
 	List list1, list2;
 	list1.push_back(TESTVALUE_1);
 	list2.push_front(list1);
+	return;
+}
+
+void PushListFrontInvalidException()
+{
+	List list;
+	list.push_back(TESTVALUE_1);
+	list.push_front(list);
 	return;
 }
 
@@ -270,11 +278,16 @@ namespace lab1unittests
 			unsigned expected[4] = { list1.at(0), list1.at(1), list1.at(2), list1.at(3) },
 				actual[4] = { TESTVALUE_2, TESTVALUE_1, TESTVALUE_1, TESTVALUE_2 };
 			Assert::IsTrue(AreEqualArrays(expected, actual, 4));
+		}	
+
+		TEST_METHOD(PushListFront_LogicFail)
+		{
+			Assert::ExpectException<logic_error>(PushListFrontLogicException);
 		}
 
-		TEST_METHOD(PushListFront_Fail)
+		TEST_METHOD(PushListFront_InvalidFail)
 		{
-			Assert::ExpectException<logic_error>(PushListFrontException);
+			Assert::ExpectException<invalid_argument>(PushListFrontInvalidException);
 		}
 	};
 }

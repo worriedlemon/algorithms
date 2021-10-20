@@ -22,14 +22,12 @@ private:
 			this->nextElement = nextElement;
 		}
 
-		~ListElement()
-		{
-			cout << "Deleting list element (" << element << ")\n";
-		}
+		~ListElement(){ }
 	};
 	
 	ListElement* head;
 	ListElement* currentElement;
+	ListElement* tail;
 	
 	// Function that reset the current list element to the start
 	void Reset()
@@ -40,36 +38,40 @@ private:
 
 public:
 	// Default constructor, creates an empty list
-	List() : head(NULL), currentElement(NULL) { }
+	List() : head(NULL), currentElement(NULL), tail(NULL) { }
 
 	// Destructor
 	~List()
 	{
-		if (head != NULL)
+		if (!isEmpty())
 		{
+			cout << "Deleting the list...\n";
 			Reset();
-			cout << "Initializing list deletion...\n";
-			ListElement* temporaryElement;
-			while (currentElement != NULL)
+			while (head->nextElement != NULL)
 			{
-				temporaryElement = currentElement->nextElement;
-				delete currentElement;
-				currentElement = temporaryElement;
+				head = head->nextElement;
+				delete head->previousElement;
 			}
+			delete head;
+			head = NULL;
+			cout << "Successfully!\n";
 		}
-		else cout << "List is already empty.\n";
+		else cout << "Destructor isn't needed.\n";
 	}
 	
 	// Function, which pushes an element with $value to the end of the ListElement
 	void push_back(unsigned value = 0)
 	{
 		Reset();
-		if (isEmpty()) head = new ListElement(value);
+		if (isEmpty())
+		{
+			head = new ListElement(value);
+			tail = head;
+		}
 		else
 		{
-			while (currentElement->nextElement != NULL)
-				currentElement = currentElement->nextElement;
-			currentElement->nextElement = new ListElement(value, currentElement);
+			tail->nextElement = new ListElement(value, tail);
+			tail = tail->nextElement;
 		}
 		return;
 	}
@@ -77,7 +79,11 @@ public:
 	// Function, which pushes an element with $value to the beginning of the ListElement
 	void push_front(unsigned value = 0)
 	{
-		if (isEmpty()) head = new ListElement(value);
+		if (isEmpty())
+		{
+			head = new ListElement(value);
+			tail = head;
+		}
 		else
 		{
 			head->previousElement = new ListElement(value, NULL, head);
@@ -92,11 +98,9 @@ public:
 		if (isEmpty()) throw logic_error("Empty list deletion");
 		else
 		{
-			while (currentElement->nextElement != NULL)
-				currentElement = currentElement->nextElement;
-			currentElement = currentElement->previousElement;
-			delete currentElement->nextElement;
-			currentElement->nextElement = NULL;
+			tail = tail->previousElement;
+			delete tail->nextElement;
+			tail->nextElement = NULL;
 		}
 		return;
 	}
@@ -257,13 +261,16 @@ public:
 	// Function, which pushes an other ListElement to the beginning of a start ListElement
 	void push_front(List& otherList)
 	{
-		Reset();
-		otherList.Reset();
-		while (otherList.currentElement->nextElement != NULL)
-			otherList.currentElement = otherList.currentElement->nextElement;
-		otherList.currentElement->nextElement = head;
-		head->previousElement = otherList.currentElement;
-		return;
+		if (isEmpty() || otherList.isEmpty()) throw logic_error("Pushing empty list");
+		else if (&otherList == this) throw invalid_argument("Pushing the same list");
+		else
+		{
+			otherList.tail->nextElement = head;
+			head->previousElement = otherList.tail;
+			head = otherList.head;
+			otherList.head = NULL;
+			return;
+		}
 	}
 };
 #endif

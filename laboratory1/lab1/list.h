@@ -26,43 +26,25 @@ private:
 	};
 	
 	ListElement* head;
-	ListElement* currentElement;
 	ListElement* tail;
-	
-	// Function that reset the current list element to the start
-	void Reset()
-	{
-		currentElement = head;
-		return;
-	}
 
 public:
 	// Default constructor, creates an empty list
-	List() : head(NULL), currentElement(NULL), tail(NULL) { }
+	List() : head(NULL), tail(NULL) { }
 
 	// Destructor
 	~List()
 	{
-		if (!isEmpty())
+		try
 		{
-			cout << "Deleting the list...\n";
-			Reset();
-			while (head->nextElement != NULL)
-			{
-				head = head->nextElement;
-				delete head->previousElement;
-			}
-			delete head;
-			head = NULL;
-			cout << "Successfully!\n";
+			clear();
 		}
-		else cout << "Destructor isn't needed.\n";
+		catch (logic_error error) {}
 	}
 	
-	// Function, which pushes an element with $value to the end of the ListElement
+	// Function, which pushes an element with $value to the end of the list
 	void push_back(unsigned value = 0)
 	{
-		Reset();
 		if (isEmpty())
 		{
 			head = new ListElement(value);
@@ -76,7 +58,7 @@ public:
 		return;
 	}
 
-	// Function, which pushes an element with $value to the beginning of the ListElement
+	// Function, which pushes an element with $value to the beginning of the list
 	void push_front(unsigned value = 0)
 	{
 		if (isEmpty())
@@ -92,44 +74,60 @@ public:
 		return;
 	}
 
-	// Function, which removes an element from the end of the ListElement
+	// Function, which removes an element from the end of the list
 	void pop_back()
 	{
 		if (isEmpty()) throw logic_error("Empty list deletion");
 		else
 		{
-			tail = tail->previousElement;
-			delete tail->nextElement;
-			tail->nextElement = NULL;
+			if (head != tail)
+			{
+				tail = tail->previousElement;
+				delete tail->nextElement;
+				tail->nextElement = NULL;
+			}
+			else
+			{
+				delete head;
+				head = NULL;
+			}
 		}
 		return;
 	}
 
-	// Function, which removes an element from the beginning of the ListElement
+	// Function, which removes an element from the beginning of the list
 	void pop_front()
 	{
 		if (isEmpty()) throw logic_error("Empty list deletion");
 		else
 		{
-			head = head->nextElement;
-			delete head->previousElement;
-			head->previousElement = NULL;
+			if (head != tail)
+			{
+				head = head->nextElement;
+				delete head->previousElement;
+				head->previousElement = NULL;
+			}
+			else
+			{
+			delete head;
+			head = NULL;
+			}
 		}
 		return;
 	}
 
-	// Function for checking for any elements inside the ListElement, if there in none - returns $true
+	// Function for checking for any elements inside the list, if there in none - returns $true
 	bool isEmpty()
 	{
 		return (head == NULL ? true : false);
 	}
 
-	// Function, which returns the length of the ListElement in elements
+	// Function, which returns the length of the list in elements
 	size_t get_size()
 	{
 		if (!isEmpty())
 		{
-			Reset();
+			ListElement* currentElement = head;
 			size_t currentElementIndex = 0;
 			while (currentElement->nextElement != NULL)
 			{
@@ -141,7 +139,7 @@ public:
 		return 0;
 	}
 
-	// Function, which inserts the element with $value on the $index's place in the ListElement
+	// Function, which inserts the element with $value on the $index's place in the list
 	void insert(unsigned value, size_t index)
 	{
 		const size_t listSize = get_size();
@@ -150,7 +148,7 @@ public:
 		else if (index == 0) push_front(value);
 		else
 		{
-			Reset();
+			ListElement* currentElement = head;
 			size_t currentElementIndex = 0;
 			while (currentElementIndex != index)
 			{
@@ -174,7 +172,7 @@ public:
 		}
 		else
 		{
-			Reset();
+			ListElement* currentElement = head;
 			size_t currentElementIndex = 0;
 			while (currentElementIndex != index)
 			{
@@ -191,7 +189,7 @@ public:
 		if (index >= get_size()) throw out_of_range("List index out of range");
 		else
 		{
-			Reset();
+			ListElement* currentElement = head;
 			size_t currentElementIndex = 0;
 			while (currentElementIndex != index)
 			{
@@ -212,7 +210,7 @@ public:
 		else if (index == 0) pop_front();
 		else
 		{
-			Reset();
+			ListElement* currentElement = head;
 			size_t currentElementIndex = 0;
 			while (currentElementIndex != index)
 			{
@@ -232,7 +230,6 @@ public:
 		if (isEmpty()) throw logic_error("Clearing an empty list");
 		else
 		{
-			Reset();
 			while (head->nextElement != NULL)
 			{
 				head = head->nextElement;
@@ -244,32 +241,33 @@ public:
 		return;
 	}
 
-	// Overloaded operator for printing the $outputListElement out
+	// Overloaded operator for printing the $outputList out
 	friend ostream& operator<<(ostream& output, List & outputList)
 	{
-		outputList.Reset();
+		ListElement* currentElement = outputList.head;
 		output << "[";
-		while (outputList.currentElement != NULL)
+		while (currentElement != NULL)
 		{
-			output << outputList.currentElement->element << (outputList.currentElement->nextElement == NULL ? "]" : ", ");
-			outputList.currentElement = outputList.currentElement->nextElement;
+			output << currentElement->element << (currentElement->nextElement == NULL ? "]" : ", ");
+			currentElement = currentElement->nextElement;
 		}
 		if (outputList.isEmpty()) output << "] - list is empty";
 		return output;
 	}
 
-	// Function, which pushes an other ListElement to the beginning of a start ListElement
+	// Function, which pushes an other list to the beginning of an original list
 	void push_front(List& otherList)
 	{
-		if (isEmpty() || otherList.isEmpty()) throw logic_error("Pushing empty list");
-		else if (&otherList == this) throw invalid_argument("Pushing the same list");
+		if (head == otherList.head) throw invalid_argument("Pushing the same list");
+		else if (isEmpty() || otherList.isEmpty()) throw logic_error("Pushing an empty list");
 		else
 		{
-			otherList.tail->nextElement = head;
-			head->previousElement = otherList.tail;
-			head = otherList.head;
-			otherList.head = NULL;
-			return;
+			ListElement* currentElement = otherList.tail;
+			while (currentElement != NULL)
+			{
+				push_front(currentElement->element);
+				currentElement = currentElement->previousElement;
+			}
 		}
 	}
 };

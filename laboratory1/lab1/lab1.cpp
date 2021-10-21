@@ -49,4 +49,5 @@ int main()
         cout << "\n[!] Exception caught: " << exception.what() << "\n\n";
     }
     cout << "Test: " << NewList << " (checkmark)\n\n";
+    cout << "Checking if the pushed list is still accessible:\n" << otherList << " (checkmark)\n";
 }

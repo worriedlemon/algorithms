@@ -122,6 +122,16 @@ namespace lab1unittests
 			Assert::IsTrue(AreEqualArrays(expected, actual, 2));
 		}
 
+		// pop_back(), testing on deleting the last element
+		TEST_METHOD(PopBack_Last)
+		{
+			List list;
+			list.push_back();
+
+			list.pop_back();
+			Assert::IsTrue(list.isEmpty());
+		}
+
 		//pop_back(), catches exception
 		TEST_METHOD(PopBack_Fail)
 		{
@@ -139,6 +149,16 @@ namespace lab1unittests
 			list.pop_front();
 			unsigned expected[2] = { list.at(0), list.at(1) }, actual[2] = { TESTVALUE_1, 0U };
 			Assert::IsTrue(AreEqualArrays(expected, actual, 2));
+		}
+
+		// pop_front(), testing on deleting the last element
+		TEST_METHOD(PopFront_Last)
+		{
+			List list;
+			list.push_back();
+
+			list.pop_front();
+			Assert::IsTrue(list.isEmpty());
 		}
 
 		//pop_front(), catches exception
@@ -204,6 +224,48 @@ namespace lab1unittests
 			Assert::ExpectException<out_of_range>(InsertException);
 		}
 
+		//remove() from the beginning
+		TEST_METHOD(Remove_Front)
+		{
+			List list;
+			list.push_back();
+			list.push_back(TESTVALUE_1);
+			list.push_back(TESTVALUE_2);
+			list.remove(0);
+			unsigned expected[2] = { list.at(0), list.at(1) }, actual[2] = { TESTVALUE_1, TESTVALUE_2 };
+			Assert::IsTrue(AreEqualArrays(expected, actual, 2));
+		}
+
+		//remove() from the middle
+		TEST_METHOD(Remove_Middle)
+		{
+			List list;
+			list.push_back(TESTVALUE_1);
+			list.push_back(0);
+			list.push_back(TESTVALUE_2);
+			list.remove(1);
+			unsigned expected[2] = { list.at(0), list.at(1) }, actual[2] = { TESTVALUE_1, TESTVALUE_2 };
+			Assert::IsTrue(AreEqualArrays(expected, actual, 2));
+		}
+
+		//remove() from the end
+		TEST_METHOD(Remove_Back)
+		{
+			List list;
+			list.push_back(TESTVALUE_1);
+			list.push_back(TESTVALUE_2);
+			list.push_back();
+			list.remove(list.get_size()-1);
+			unsigned expected[2] = { list.at(0), list.at(1) }, actual[2] = { TESTVALUE_1, TESTVALUE_2 };
+			Assert::IsTrue(AreEqualArrays(expected, actual, 2));
+		}
+
+		//remove() test, catches exception
+		TEST_METHOD(Remove_Fail)
+		{
+			Assert::ExpectException<logic_error>(RemoveException);
+		}
+
 		//isEmpty() with an empty list
 		TEST_METHOD(EmptyList_True)
 		{
@@ -249,24 +311,7 @@ namespace lab1unittests
 			Assert::ExpectException<logic_error>(SetException);
 		}
 
-		//remove() test, deletes element
-		TEST_METHOD(Remove_Pass)
-		{
-			List list;
-			list.push_back(TESTVALUE_1);
-			list.push_back(0);
-			list.push_back(TESTVALUE_2);
-			list.remove(1);
-			unsigned expected[2] = { list.at(0), list.at(1) }, actual[2] = { TESTVALUE_1, TESTVALUE_2 };
-			Assert::IsTrue(AreEqualArrays(expected, actual, 2));
-		}
-
-		//remove() test, catches exception
-		TEST_METHOD(Remove_Fail)
-		{
-			Assert::ExpectException<logic_error>(RemoveException);
-		}
-
+		// Pushing list, both list remain accessible
 		TEST_METHOD(PushListFront_Pass)
 		{
 			List list1, list2;
@@ -275,16 +320,19 @@ namespace lab1unittests
 			list2.push_front(TESTVALUE_1);
 			list2.push_front(TESTVALUE_2);
 			list1.push_front(list2);
-			unsigned expected[4] = { list1.at(0), list1.at(1), list1.at(2), list1.at(3) },
-				actual[4] = { TESTVALUE_2, TESTVALUE_1, TESTVALUE_1, TESTVALUE_2 };
-			Assert::IsTrue(AreEqualArrays(expected, actual, 4));
+			unsigned expected1[4] = { list1.at(0), list1.at(1), list1.at(2), list1.at(3) },
+				actual1[4] = { TESTVALUE_2, TESTVALUE_1, TESTVALUE_1, TESTVALUE_2 },
+				expected2[2] = { list2.at(0), list2.at(1) }, actual2[2] = {TESTVALUE_2, TESTVALUE_1};
+			Assert::IsTrue(AreEqualArrays(expected1, actual1, 4) && AreEqualArrays(expected2, actual2, 2));
 		}	
 
+		// Pushing empty list, catches logic exception
 		TEST_METHOD(PushListFront_LogicFail)
 		{
 			Assert::ExpectException<logic_error>(PushListFrontLogicException);
 		}
 
+		// Pushing the same list, catches invalid argument exception
 		TEST_METHOD(PushListFront_InvalidFail)
 		{
 			Assert::ExpectException<invalid_argument>(PushListFrontInvalidException);

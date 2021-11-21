@@ -17,13 +17,13 @@ class BinaryHeap
 		Node* right;
 		int element;
 
-		Node(int element = 0, Node* parent = nullptr, Node* left = nullptr, Node* right = nullptr)
-			: element(element), parent(parent),  left(left), right(right) {}
+		Node(int element = 0, Node* parent = nullptr)
+			: element(element), parent(parent),  left(nullptr), right(nullptr) {}
 
 		~Node()
 		{
-			if (left) delete left;
-			if (right) delete right;
+			if (left != nullptr) delete left;
+			if (right != nullptr) delete right;
 		}
 	};
 
@@ -45,10 +45,7 @@ class BinaryHeap
 		Stack() : top(nullptr) {}
 		~Stack()
 		{
-			while (top != nullptr)
-			{
-				Pop();
-			}
+			while (top != nullptr) Pop();
 		}
 
 		void Push(Node* node)
@@ -77,12 +74,8 @@ class BinaryHeap
 		Queue() : first(nullptr), last(nullptr) {}
 		~Queue()
 		{
-			while (first != nullptr)
-			{
-				LinearStrElement* temp = first->next;
-				delete first;
-				first = temp;
-			}
+			while (first != nullptr) Pop();
+			last = nullptr;
 		}
 
 		void Push(Node* node)
@@ -226,7 +219,7 @@ public:
 						current->right = nullptr;
 					}
 					if (GetFullSize(height - 1) == size - 1) height--;
-					if (!last) Heapify(condition, iterator.previous);
+					if (!last) Heapify(condition, iterator.previous);	
 				}
 				size--;
 				return;

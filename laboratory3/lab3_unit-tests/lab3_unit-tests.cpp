@@ -26,10 +26,62 @@ namespace lab3unittests
 		return;
 	}
 
+	void NextDFTException()
+	{
+		BinaryHeap heap;
+
+		IIterator* iterator = heap.create_dft_iterator();
+		iterator->next();
+		return;
+	}
+
+	void NextBFTException()
+	{
+		BinaryHeap heap;
+
+		IIterator* iterator = heap.create_bft_iterator();
+		iterator->next();
+		return;
+	}
+
 	TEST_CLASS(lab3unittests)
 	{
 	public:
 		
+		TEST_METHOD(HasNext_DFT_Test)
+		{
+			BinaryHeap heap;
+			heap.insert(TEST_1);
+
+			IIterator* iterator = heap.create_dft_iterator();
+			Assert::IsTrue(iterator->has_next());
+			iterator->next();
+			Assert::IsFalse(iterator->has_next());
+			delete iterator;
+		}
+
+		TEST_METHOD(HasNext_BFT_Test)
+		{
+			BinaryHeap heap;
+			heap.insert(TEST_1);
+
+			IIterator* iterator = heap.create_bft_iterator();
+			Assert::IsTrue(iterator->has_next());
+			iterator->next();
+			Assert::IsFalse(iterator->has_next());
+			delete iterator;
+		}
+
+		TEST_METHOD(Next_DFT_Exception)
+		{
+			Assert::ExpectException<out_of_range>(NextDFTException);
+		}
+
+		TEST_METHOD(Next_BFT_Exception)
+		{
+			Assert::ExpectException<out_of_range>(NextBFTException);
+		}
+
 		TEST_METHOD(Contains_Test)
 		{
 			BinaryHeap heap;

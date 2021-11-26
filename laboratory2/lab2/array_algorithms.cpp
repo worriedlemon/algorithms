@@ -38,13 +38,13 @@ void BogoSort(int* array, size_t size)
 void BubbleSort(int *array, size_t size)
 {
 	for (size_t i = 0; i < size - 1; i++)
-	for (size_t j = i; j < size; j++)
+	for (size_t j = 0; j < size - i; j++)
 	{
-		if (array[i] > array[j])
+		if (array[j] > array[j+1])
 		{
-			int temp = array[i];
-			array[i] = array[j];
-			array[j] = temp;
+			int temp = array[j];
+			array[j] = array[j+1];
+			array[j+1] = temp;
 		}
 	}
 	return;

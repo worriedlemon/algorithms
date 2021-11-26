@@ -6,106 +6,110 @@ using namespace std;
 using namespace std;
 #include "Iterator.h"
 
+// Heap Node structure
+class Node
+{
+public:
+	Node* parent;
+	Node* left;
+	Node* right;
+	int element;
+
+	Node(int element = 0, Node* parent = nullptr)
+		: element(element), parent(parent), left(nullptr), right(nullptr) {}
+
+	~Node()
+	{
+		if (left != nullptr) delete left;
+		if (right != nullptr) delete right;
+	}
+};
+
+// Element of a linear structure (stack or queue)
+class LinearStrElement
+{
+public:
+	Node* node;
+	LinearStrElement* next;
+
+	LinearStrElement(Node* current = nullptr, LinearStrElement* prev = nullptr)
+		: node(current), next(nullptr) {}
+
+	~LinearStrElement() {}
+};
+
+// Stack structure (First In - Last Out)
+class Stack
+{
+public:
+	LinearStrElement* top;
+
+	Stack() : top(nullptr) {}
+	~Stack()
+	{
+		while (top != nullptr) Pop();
+	}
+
+	void Push(Node* node)
+	{
+		LinearStrElement* element = new LinearStrElement(node);
+		element->next = top;
+		top = element;
+		return;
+	}
+
+	void Pop()
+	{
+		if (top == nullptr) throw out_of_range("Stack is empty");
+		LinearStrElement* next = top->next;
+		delete top;
+		top = next;
+		return;
+	}
+};
+
+// Queue structure (First In - First Out)
+class Queue
+{
+public:
+	LinearStrElement* first;
+	LinearStrElement* last;
+
+	Queue() : first(nullptr), last(nullptr) {}
+	~Queue()
+	{
+		while (first != nullptr) Pop();
+		last = nullptr;
+	}
+
+	void Push(Node* node)
+	{
+		if (last != nullptr)
+		{
+			last->next = new LinearStrElement(node, last);
+			last = last->next;
+		}
+		else
+		{
+			first = new LinearStrElement(node);
+			last = first;
+		}
+		return;
+	}
+
+	void Pop()
+	{
+		if (first == nullptr) throw out_of_range("Queue is empty");
+		LinearStrElement* next = first->next;
+		delete first;
+		first = next;
+		return;
+	}
+};
+
 // Maximum Binary Heap class
 class BinaryHeap
 {
-	// Heap Node structure
-	struct Node
-	{
-		Node* parent;
-		Node* left;
-		Node* right;
-		int element;
-
-		Node(int element = 0, Node* parent = nullptr)
-			: element(element), parent(parent),  left(nullptr), right(nullptr) {}
-
-		~Node()
-		{
-			if (left != nullptr) delete left;
-			if (right != nullptr) delete right;
-		}
-	};
-
-	// Element of a linear structure (stack or queue)
-	struct LinearStrElement
-	{
-		Node* node;
-		LinearStrElement* next;
-
-		LinearStrElement(Node* current = nullptr, LinearStrElement* prev = nullptr)
-			: node(current), next(nullptr) {}
-
-		~LinearStrElement() {}
-	};
-
-	// Stack structure (First In - Last Out)
-	struct Stack
-	{
-		Stack() : top(nullptr) {}
-		~Stack()
-		{
-			while (top != nullptr) Pop();
-		}
-
-		void Push(Node* node)
-		{
-			LinearStrElement* element = new LinearStrElement(node);
-			element->next = top;
-			top = element;
-			return;
-		}
-
-		void Pop()
-		{
-			if (top == nullptr) throw out_of_range("Stack is empty");
-			LinearStrElement* next = top->next;
-			delete top;
-			top = next;
-			return;
-		}
-
-		LinearStrElement* top;
-	};
-
-	// Queue structure (First In - First Out)
-	struct Queue
-	{
-		Queue() : first(nullptr), last(nullptr) {}
-		~Queue()
-		{
-			while (first != nullptr) Pop();
-			last = nullptr;
-		}
-
-		void Push(Node* node)
-		{
-			if (last != nullptr)
-			{
-				last->next = new LinearStrElement(node, last);
-				last = last->next;
-			}
-			else
-			{
-				first = new LinearStrElement(node);
-				last = first;
-			}
-			return;
-		}
-
-		void Pop()
-		{
-			if (first == nullptr) throw out_of_range("Queue is empty");
-			LinearStrElement* next = first->next;
-			delete first;
-			first = next;
-			return;
-		}
-
-		LinearStrElement* first;
-		LinearStrElement* last;
-	};
-
 	Node* root;
 	size_t size;
 	size_t height;

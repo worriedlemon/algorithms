@@ -4,20 +4,16 @@
 void BinaryHeap::siftUp(Node* startNode)
 {
 	Node* currentNode = startNode;
-	while (1)
+	while (currentNode != root)
 	{
-		if (currentNode == root) break;
-		else
+		if (currentNode->element > currentNode->parent->element)
 		{
-			if (currentNode->element > currentNode->parent->element)
-			{
-				int temporaryData = currentNode->element;
-				currentNode->element = currentNode->parent->element;
-				currentNode->parent->element = temporaryData;
-				currentNode = currentNode->parent;
-			}
-			else break;
+			int temporaryData = currentNode->element;
+			currentNode->element = currentNode->parent->element;
+			currentNode->parent->element = temporaryData;
+			currentNode = currentNode->parent;
 		}
+		else break;
 	}
 	return;
 }
@@ -25,27 +21,21 @@ void BinaryHeap::siftUp(Node* startNode)
 void BinaryHeap::siftDown(Node* startNode)
 {
 	Node* currentNode = startNode;
-	while (1)
+	while (currentNode != nullptr)
 	{
-		if (currentNode != nullptr)
+		if (currentNode->left == nullptr) break;
+		Node* swapNode;
+
+		if (currentNode->right == nullptr) swapNode = currentNode->left;
+		else
 		{
-			if (currentNode->left == nullptr) break;
-			Node* swapNode;
-			if (currentNode->right == nullptr)
-			{
-				swapNode = currentNode->left;
-			}
-			else
-			{
-				if (currentNode->left->element > currentNode->right->element) swapNode = currentNode->left;
-				else swapNode = currentNode->right;
-			}
-			int temporaryData = currentNode->element;
-			currentNode->element = swapNode->element;
-			swapNode->element = temporaryData;
-			currentNode = swapNode;
+			if (currentNode->left->element > currentNode->right->element) swapNode = currentNode->left;
+			else swapNode = currentNode->right;
 		}
-		else break;
+		int temporaryData = currentNode->element;
+		currentNode->element = swapNode->element;
+		swapNode->element = temporaryData;
+		currentNode = swapNode;
 	}
 	return;
 }

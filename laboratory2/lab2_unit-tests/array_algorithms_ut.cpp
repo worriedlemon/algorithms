@@ -1,15 +1,16 @@
+#include "pch.h"
 #include <algorithm>
 
 bool BinarySearch(int* array, size_t size, int element)
 {
 	size_t left = 0, right = size - 1;
-	while (1)
+	while (left != right)
 	{
 		size_t middle = (right + left) / 2;
 		if (array[middle] == element) return true;
 		else if (array[middle] > element) right = middle - 1;
 		else left = middle + 1;
-		if (left == right) break;
+		if (left == right && array[left] == element) return true;
 	}
 	return false;
 }
@@ -93,7 +94,7 @@ void CountingSort(unsigned char *array, size_t size)
 
 	size_t* count = new size_t[countSize], k = 0;
 	for (size_t i = 0; i < countSize; i++) count[i] = 0;
-	for (size_t i = 0; i < size; i++) count[array[i] - 32]++;
+	for (size_t i = 0; i < size; i++) count[array[i]-32]++;
 	for (unsigned char i = 0; i < countSize; i++)
 	{
 		for (size_t j = 0; j < count[i]; j++)

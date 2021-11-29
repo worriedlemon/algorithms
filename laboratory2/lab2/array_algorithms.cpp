@@ -1,15 +1,15 @@
 #include <algorithm>
 
+// Effective search algorithm based on splitting the sorted array in halves until the element is found
 bool BinarySearch(int* array, size_t size, int element)
 {
 	size_t left = 0, right = size - 1;
-	while (1)
+	while (left != right)
 	{
 		size_t middle = (right + left) / 2;
+		if (array[middle] > element) right = --middle;
+		else if (array[middle] < element) left = ++middle;
 		if (array[middle] == element) return true;
-		else if (array[middle] > element) right = middle - 1;
-		else left = middle + 1;
-		if (left == right) break;
 	}
 	return false;
 }

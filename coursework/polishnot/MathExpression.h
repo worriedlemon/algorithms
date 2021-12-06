@@ -6,8 +6,8 @@
 #include "stack_template.h"
 using namespace std;
 
-const size_t functionCount = 8, constCount = 3;
-const string possibleFunc[functionCount] = { "sin", "cos", "tg", "ctg", "sqrt", "log", "sec", "cosec"};
+const size_t functionCount = 9, constCount = 3;
+const string possibleFunc[functionCount] = { "sin", "cos", "tg", "ctg", "sqrt", "ln", "log", "sec", "cosec"};
 const string possibleConst[constCount] = { "pi", "e", "phi" };
 const double possibleDoubleConst[constCount] = { 3.141592653589793, 2.718281828459045, ((sqrt(5) + 1) / 2) };
 
@@ -110,6 +110,11 @@ class MathExpression
 		{
 			if (*value <= 0) return INFINITY;
 			result = log(*value);
+		}
+		else if (func == "ln")
+		{
+			if (*value <= 0) return INFINITY;
+			result = ln(*value);
 		}
 		else if (func == "sec")
 		{

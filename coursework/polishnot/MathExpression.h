@@ -109,12 +109,12 @@ class MathExpression
 		else if (func == "log")
 		{
 			if (*value <= 0) return INFINITY;
-			result = log(*value);
+			result = log10(*value);
 		}
 		else if (func == "ln")
 		{
 			if (*value <= 0) return INFINITY;
-			result = ln(*value);
+			result = log(*value);
 		}
 		else if (func == "sec")
 		{
@@ -172,7 +172,7 @@ class MathExpression
 				if (point)
 				{
 					power *= 10;
-					*result += ((int)str[i] - 48)/power;
+					*result += (double)((int)str[i] - 48)/power;
 				}
 				else *result = (*result) * 10 + (int)str[i] - 48;
 			}
@@ -347,7 +347,7 @@ public:
 			{
 				if (stack.top != nullptr)
 				{
-					if (stack.top->data->data->priority > current->data->priority)
+					if (stack.top->data->data->priority >= current->data->priority)
 					{
 						newMathExpression->head->previous = new ExpressionNode(new MathElement(stack.top->data->data->data, stack.top->data->data->type, stack.top->data->data->priority), nullptr, newMathExpression->head);
 						newMathExpression->head = newMathExpression->head->previous;
@@ -408,7 +408,7 @@ public:
 			if (current->data->type == MathType::Operator || current->data->type == MathType::Function)
 			{
 				_operator.Push(current);
-				rightIsAvailable = false;
+				if (current->data->type == MathType::Operator) rightIsAvailable = false;
 			}
 			else
 			{
@@ -461,20 +461,77 @@ public:
 							}
 							if (*value == INFINITY) return *value;
 						}
-						if (leftOperand.top == nullptr) leftOperand.Push(value);
+						if (leftOperand.top == nullptr && _operator.top->data->data->type != MathType::Function)
+							leftOperand.Push(value);
 						else rightOperand.Push(value);
 						_operator.Pop();
 					}
+				}
+				if (_operator.top != nullptr && _operator.top->data->data->type == MathType::Function && (rightOperand.top != nullptr || leftOperand.top != nullptr))
+				{
+					double* value = new double();
+					if (rightOperand.top == nullptr)
+					{
+						*value = CalculateFunction(_operator.top->data->data->data, leftOperand.top->data);
+						leftOperand.Pop();
+						leftOperand.Push(value);
+					}
+					else
+					{
+						*value = CalculateFunction(_operator.top->data->data->data, rightOperand.top->data);
+						rightOperand.Pop();
+						rightOperand.Push(value);
+					}
+					_operator.Pop();
 				}
 			}
 			current = current->next;
 		}
 		while (_operator.top != nullptr)
 		{
-			double *value = new double(CalculateFunction(_operator.top->data->data->data, leftOperand.top->data));
-			leftOperand.Pop();
-			leftOperand.Push(value);
+			double *value = new double;
+			if (_operator.top->data->data->type == MathType::Operator)
+			{
+				const char oper = _operator.top->data->data->data[0];
+				switch (oper)
+				{
+				case '+':
+					*value = *leftOperand.top->data + *rightOperand.top->data;
+					break;
+				case '-':
+					*value = *leftOperand.top->data - *rightOperand.top->data;
+					break;
+				case '*':
+					*value = *leftOperand.top->data * *rightOperand.top->data;
+					break;
+				case '/':
+					*value = *leftOperand.top->data / *rightOperand.top->data;
+					break;
+				case '^':
+					*value = pow(*leftOperand.top->data, *rightOperand.top->data);
+				}
+				leftOperand.Pop();
+				rightOperand.Pop();
+			}
+			else
+			{
+				if (rightOperand.top != nullptr)
+				{
+					*value = CalculateFunction(_operator.top->data->data->data, rightOperand.top->data);
+					rightOperand.Pop();
+				}
+				else
+				{
+					*value = CalculateFunction(_operator.top->data->data->data, leftOperand.top->data);
+					leftOperand.Pop();
+				}
+				if (*value == INFINITY) return *value;
+			}
+			char tempPrior = _operator.top->data->data->priority;
 			_operator.Pop();
+			if (leftOperand.top == nullptr || (_operator.top->data->data->priority >= tempPrior && tempPrior >= 2))
+				leftOperand.Push(value);
+			else rightOperand.Push(value);
 		}
 		return *leftOperand.top->data;
 	}

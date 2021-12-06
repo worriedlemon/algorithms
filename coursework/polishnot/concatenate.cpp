@@ -18,7 +18,7 @@ char* Concatenate(const char* str1, size_t number, const char* str2 = "")
 	index = 0;
 	while (num != 0)
 	{
-		numberInChars[index] = num % 10 + 48;
+		numberInChars[numberCharsCount-index-1] = num % 10 + 48;
 		index++;
 		num /= 10;
 	}

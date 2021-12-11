@@ -32,7 +32,7 @@ namespace courseworkunittests
 
 	void DoubleOperatorException()
 	{
-		string MathString = "*4+*7";
+		string MathString = "4+*7";
 		MathExpression expression;
 		expression.FromString(MathString);
 	}

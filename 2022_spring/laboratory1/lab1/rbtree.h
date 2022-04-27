@@ -124,10 +124,14 @@ class RBTree
 					gp->SwitchColor(NodeColor::Red);
 					cur = gp;
 				}
-				else
+				else if (p->left == cur)
 				{
 					cur = p;
 					RotateRight(cur);
+				}
+				else
+				{
+					
 					p->SwitchColor(NodeColor::Black);
 					gp->SwitchColor(NodeColor::Red);
 					RotateLeft(gp);

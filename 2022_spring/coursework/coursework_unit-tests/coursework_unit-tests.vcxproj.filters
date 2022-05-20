@@ -49,5 +49,8 @@
     <Text Include="tests\test_source_incomes.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+    <Text Include="tests\test_wrong_capacity.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
 </Project>

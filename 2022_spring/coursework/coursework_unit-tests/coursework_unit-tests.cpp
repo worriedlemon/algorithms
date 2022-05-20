@@ -4,22 +4,20 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#define CONCAT(str1, str2) # str1##str2
-#define TEST_FILE(str) testDirectory + str
+#define TEST_FILE(str) testDirectory() + str
 
-const string GetTestDirectory(string path)
-{
-	const size_t lastSlash = path.rfind('\\');
+auto testDirectory = []() -> const string {
+	const string file = string(__FILE__);
+	const size_t lastSlash = file.rfind('\\');
 	if (std::string::npos != lastSlash)
 	{
-		return path.substr(0, lastSlash + 1) + "tests\\test_";
+		return file.substr(0, lastSlash + 1) + "tests\\test_";
 	}
 	else return "";
-}
+};
 
 double FordFulkerson(FlowNetwork& graph);
 
-const string testDirectory = GetTestDirectory(__FILE__);
 
 namespace courseworkunittests
 {
@@ -49,6 +47,11 @@ namespace courseworkunittests
 		{
 			FlowNetwork graph = CreateFlowNetworkFromFile(TEST_FILE("hard.txt"));
 			Assert::IsTrue(FordFulkerson(graph) == 24);
+		}
+
+		TEST_METHOD(FlowNetworkTest_FailOnNonPositiveCapacities)
+		{
+			Assert::ExpectException<logic_error>([&] { CreateFlowNetworkFromFile(TEST_FILE("wrong_capacity.txt")); });
 		}
 
 		TEST_METHOD(FlowNetworkTest_FailOnNoSource)

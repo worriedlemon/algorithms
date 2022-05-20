@@ -180,6 +180,7 @@
     <Text Include="tests\test_no_drain.txt" />
     <Text Include="tests\test_no_source.txt" />
     <Text Include="tests\test_source_incomes.txt" />
+    <Text Include="tests\test_wrong_capacity.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

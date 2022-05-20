@@ -168,6 +168,7 @@ public:
 			else if (name2_buffer == "S") throw logic_error("Source must not have incoming paths");
 			if (vertexesNames.Find(name1_buffer) < 0) vertexesNames.PushBack(name1_buffer);
 			if (vertexesNames.Find(name2_buffer) < 0) vertexesNames.PushBack(name2_buffer);
+			if (weight <= 0) throw logic_error("Capacity must be a positive value");
 		}
 		if (st != 3) throw logic_error("Wrong input: network has no source or/and drain");
 		matrix.size = vertexesNames.GetSize();

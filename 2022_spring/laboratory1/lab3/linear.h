@@ -3,7 +3,7 @@
 #include <iostream>
 using namespace std;
 
-template <typename T>
+template <class T>
 class List
 {
 protected:
@@ -12,7 +12,7 @@ protected:
 		ListElement* previous, * next;
 		T data;
 
-		ListElement(T data, ListElement* next = nullptr, ListElement* previous = nullptr) : data(data), previous(previous), next(next) {}
+		ListElement(T& data, ListElement* next = nullptr, ListElement* previous = nullptr) : data(data), previous(previous), next(next) {}
 		~ListElement() {}
 	};
 
@@ -26,8 +26,16 @@ public:
 		for (size_t i = 0; i < size; i++) this->PushBack(arr[i]);
 	}
 
-	/* EXPERIMENTAL CONSTRUCTOR
-	
+	List(List<T>& ref) : head(nullptr), tail(nullptr)
+	{
+		const size_t size = ref.GetSize();
+		for (size_t i = 0; i < size; i++)
+		{
+			T newElem = ref.GetData(i);
+			this->PushBack(newElem);
+		}
+	}
+
 	template <typename... Args> List(Args... list) : head(nullptr), tail(nullptr) { this->PushBack(list...); }
 
 	template <typename... Args>
@@ -35,11 +43,24 @@ public:
 	{
 		this->PushBack(first);
 		this->PushBack(rest...);
-	}*/
+	}
 
 	~List()
 	{
 		if (head != nullptr) Clear();
+	}
+
+	List<T>& operator+(List<T>& l)
+	{
+		List<T>* newList = new List<T>();
+		for (size_t i = 0; i < GetSize(); i++) newList->PushBack(GetData(i));
+		for (size_t i = 0; i < l.GetSize(); i++) newList->PushBack(l.GetData(i));
+		return *newList;
+	}
+
+	void operator+=(List<T>& l)
+	{
+		*this = *this + l;
 	}
 
 	friend bool operator==(List<T>& list1, List<T>& list2)
@@ -98,6 +119,19 @@ public:
 		return size;
 	}
 
+	int Find(T element)
+	{
+		ListElement* current = head;
+		int index = 0;
+		while (current != nullptr)
+		{
+			if (current->data == element) return index;
+			current = current->next;
+			index++;
+		}
+		return -1;
+	}
+
 	virtual void PushFront(T element)
 	{
 		ListElement* newElement = new ListElement(element, head);
@@ -137,7 +171,23 @@ public:
 
 	virtual void PushIndex(int index, T element)
 	{
-		throw logic_error("Push is undefinable, use PushFront/PushBack/PushIndex");
+		const size_t lastIndex = GetSize() - 1;
+		if (index == 0) PushFront(element);
+		else if (index == lastIndex + 1) PushBack(element);
+		else if (index > lastIndex + 1 || index < 0) throw out_of_range("Stated index is invalid");
+		else
+		{
+			int currentIndex = 1;
+			ListElement* current = head->next;
+			while (currentIndex != index)
+			{
+				current = current->next;
+				currentIndex++;
+			}
+			ListElement* newElement = new ListElement(element, current, current->previous);
+			current->previous->next = newElement;
+			current->previous = newElement;
+		}
 	}
 
 	virtual void PopFront()
@@ -178,7 +228,7 @@ public:
 
 	virtual void PopIndex(int index)
 	{
-		const int lastIndex = GetSize() - 1;
+		const size_t lastIndex = GetSize() - 1;
 		if (index == 0) PopFront();
 		else if (index == lastIndex) PopBack();
 		else if (index > lastIndex || index < 0) throw out_of_range("Stated index is invalid");
@@ -216,10 +266,7 @@ public:
 		throw out_of_range("Index is incorrect");
 	}
 
-	void PrintData()
-	{
-		cout << *this;
-	}
+	inline void PrintData() { cout << *this; }
 };
 
 template <typename T>
